@@ -1,0 +1,23 @@
+New Order Received
+==================
+
+Order Details:
+-------------
+Order ID: #{{ order.id }}
+Customer: {{ order.customer.name }}
+Email: {{ order.customer.email }}
+Phone: {{ order.customer.phone_number }}
+Order Date: {{ order.order_date }}
+Status: {{ order.get_status_display }}
+{% if order.notes %}Notes: {{ order.notes }}{% endif %}
+
+Order Items:
+------------
+{% for item in items %}
+- {{ item.quantity }} x {{ item.product.name }} @ KES {{ item.price }} = KES {{ item.subtotal }}
+{% endfor %}
+
+Total Amount: KES {{ order.total_amount }}
+
+This is an automated notification from Savannah Informatics E-commerce System.
+Order processing time: Please process this order within 24 hours.

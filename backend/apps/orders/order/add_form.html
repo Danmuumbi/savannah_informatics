@@ -1,0 +1,87 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls static %}
+
+{% block extrahead %}
+{{ block.super }}
+<script src="{% static 'admin/js/vendor/jquery/jquery.js' %}"></script>
+<script src="{% static 'admin/js/jquery.init.js' %}"></script>
+<script>
+$(document).ready(function() {
+    // Add product row functionality
+    $('#add-product').click(function() {
+        var productRow = $('.product-row:first').clone();
+        productRow.find('select').val('');
+        productRow.find('input[type="number"]').val('1');
+        productRow.appendTo('#product-rows');
+        return false;
+    });
+    
+    // Remove product row functionality
+    $(document).on('click', '.remove-product', function() {
+        if ($('.product-row').length > 1) {
+            $(this).closest('.product-row').remove();
+        }
+        return false;
+    });
+});
+</script>
+{% endblock %}
+
+{% block field_sets %}
+{% firstof opts.model_name as model_name %}
+
+<fieldset class="module aligned">
+    {% for field in form %}
+        <div class="form-row{% if field.errors %} errors{% endif %} field-{{ field.name }}">
+            {{ field.errors }}
+            <label{% if field.field.required %} class="required"{% endif %} for="{{ field.id_for_label }}">{{ field.label }}:</label>
+            {{ field }}
+            {% if field.help_text %}
+            <div class="help">{{ field.help_text|safe }}</div>
+            {% endif %}
+        </div>
+    {% endfor %}
+</fieldset>
+
+<fieldset class="module aligned">
+    <h2>Order Items</h2>
+    <div id="product-rows">
+        <div class="form-row product-row">
+            <div>
+                <label class="required">Product:</label>
+                <select name="products">
+                    <option value="">---------</option>
+                    {% for product in products %}
+                    <option value="{{ product.id }}">{{ product.name }} - KES {{ product.price }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label class="required">Quantity:</label>
+                <input type="number" name="quantities" value="1" min="1" style="width: 80px;">
+            </div>
+            <div>
+                <button type="button" class="remove-product" style="margin-top: 25px;">Remove</button>
+            </div>
+        </div>
+    </div>
+    <div class="form-row">
+        <button type="button" id="add-product" class="button">Add Another Product</button>
+    </div>
+</fieldset>
+
+<style>
+.product-row {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+    align-items: flex-end;
+}
+.product-row > div {
+    flex: 1;
+}
+.product-row > div:last-child {
+    flex: 0 0 auto;
+}
+</style>
+{% endblock %}
